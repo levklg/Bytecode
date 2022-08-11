@@ -1,7 +1,6 @@
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
 
 
@@ -29,11 +28,10 @@ class Ioc {
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
 
-            Class<?> clazz =  TestLogging.class;
-            Method[] methods = clazz.getDeclaredMethods();
+            Class<?> clazz = this.myClass.getClass();
+            Method[] methods =  clazz.getDeclaredMethods();
 
-
-            for(Method m : methods){
+           for(Method m : methods){
                 if(m.isAnnotationPresent(Log.class)){
 
                     String param = " ";
@@ -41,7 +39,7 @@ class Ioc {
                         param = param + args[i];
                         if(i < (args.length - 1)) param = param + ", ";
                     }
-                      System.out.println("executed method: calculation, param:" + param);
+                    System.out.println("executed method: calculation, param:" + param);
                 }
             }
 
