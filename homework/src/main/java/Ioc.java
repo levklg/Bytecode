@@ -2,10 +2,14 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 
 
 
 class Ioc {
+
+    private static ArrayList<String> listMethodsWithAnnotation = new ArrayList<>();
+
 
     private Ioc() {
     }
@@ -13,6 +17,19 @@ class Ioc {
     static TestLoggingInterface createMyClass(Object o) {
 
         InvocationHandler handler = new DemoInvocationHandler((TestLoggingInterface) o);
+        Class<?> clazz = o.getClass();
+        Method[] methods =  clazz.getDeclaredMethods();
+
+        for(Method m : methods){
+            if(m.isAnnotationPresent(Log.class)){
+
+
+                String methodname =  m.getName();
+                listMethodsWithAnnotation.add(methodname);
+
+            }
+        }
+
 
         return (TestLoggingInterface) Proxy.newProxyInstance(Ioc.class.getClassLoader(),
                 new Class<?>[]{TestLoggingInterface.class}, handler);
@@ -30,21 +47,19 @@ class Ioc {
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
 
-            Class<?> clazz = this.myClass.getClass();
-            Method[] methods =  clazz.getDeclaredMethods();
 
-           for(Method m : methods){
-                if(m.isAnnotationPresent(Log.class)){
+           for(var sMethodName : listMethodsWithAnnotation) {
+               if (method.getName().equals(sMethodName)) {
 
-                    String param = " ";
-                    for(int i = 0; i < args.length; i++){
-                        param = param + args[i];
-                        if(i < (args.length - 1)) param = param + ", ";
-                    }
-                    System.out.println("executed method: calculation, param:" + param);
-                }
-            }
+                   String param = " ";
+                   for (int i = 0; i < args.length; i++) {
+                       param = param + args[i];
+                       if (i < (args.length - 1)) param = param + ", ";
+                   }
+                   System.out.println("executed method: calculation, param:" + param);
+               }
 
+           }
 
           if(q){
               q = true;
